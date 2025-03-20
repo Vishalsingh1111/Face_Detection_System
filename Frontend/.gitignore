@@ -9,7 +9,10 @@
 /coverage
 
 # production
+# Ignore root build but allow Frontend/build
 /build
+!/Frontend/build
+
 
 # misc
 .DS_Store
