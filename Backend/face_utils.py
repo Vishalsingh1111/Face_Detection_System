@@ -1,6 +1,5 @@
 import face_recognition
 import numpy as np
-import cv2
 
 def encode_face(image_path):
     """Extract face encoding from an image"""

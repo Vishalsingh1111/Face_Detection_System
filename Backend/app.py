@@ -1,22 +1,18 @@
-
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import base64
 import numpy as np
-import cv2
-from models import save_user, find_matching_user
+from models import save_user, find_matching_user, register_admin, login_admin
 from face_utils import encode_face
 import os
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
-# Match Face API (Automatically checks for a match)
+# -------------- Face Matching API -------------------
 @app.route("/api/match", methods=["POST"])
 def match():
     data = request.json
@@ -25,7 +21,6 @@ def match():
     if not image_data:
         return jsonify({"error": "Image is required!"}), 400
 
-    # Decode Base64 Image
     image_bytes = base64.b64decode(image_data)
     image_path = "temp_match.jpg"
     with open(image_path, "wb") as f:
@@ -38,7 +33,7 @@ def match():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
-# Register Face API (Only called if no match is found)
+# -------------- Face Registration API -------------------
 @app.route("/api/register", methods=["POST"])
 def register():
     data = request.json
@@ -60,7 +55,33 @@ def register():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
+# -------------- Admin Register API -------------------
+@app.route("/api/admin/register", methods=["POST"])
+def admin_register():
+    data = request.json
+    email = data.get("email")
+    password = data.get("password")
+
+    if not email or not password:
+        return jsonify({"error": "Email and password are required!"}), 400
+
+    result = register_admin(email, password)
+    return jsonify(result)
+
+# -------------- Admin Login API -------------------
+@app.route("/api/admin/login", methods=["POST"])
+def admin_login():
+    data = request.json
+    email = data.get("email")
+    password = data.get("password")
+
+    if not email or not password:
+        return jsonify({"error": "Email and password are required!"}), 400
+
+    result = login_admin(email, password)
+    return jsonify(result)
+
+# ------------------ Start Server ------------------
 if __name__ == "__main__":
-    # Get the PORT from environment variables for Render deployment
     port = int(os.environ.get("PORT", 5001))
-    app.run(debug=False, host="0.0.0.0", port=port)
+    app.run(debug=True, host="0.0.0.0", port=port)
