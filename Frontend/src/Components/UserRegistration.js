@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,14 @@ const UserRegistration = () => {
     const [isNewUser, setIsNewUser] = useState(false);
     const [status, setStatus] = useState("");
     const [error, setError] = useState("");
+
+    //  Redirect to "/" if admin is not in localStorage
+    useEffect(() => {
+        const admin = localStorage.getItem("admin");
+        if (!admin) {
+            navigate("/");
+        }
+    }, [navigate]);
 
     const getBase64Data = (dataUrl) => dataUrl.split(",")[1];
 
@@ -35,13 +43,11 @@ const UserRegistration = () => {
             });
 
             if (response.data.matched) {
-                // Already registered
                 setStatus(`User already registered as ${response.data.username}`);
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);
             } else {
-                // Not registered
                 setStatus("Please enter your name to register.");
                 setIsNewUser(true);
             }
@@ -76,17 +82,18 @@ const UserRegistration = () => {
         }
     };
 
-    const LogoutAdmin = async () => {
+    const LogoutAdmin = () => {
+        localStorage.removeItem("admin");
         navigate("/");
-    }
+    };
 
-    const AddAdmin = async () => {
+    const AddAdmin = () => {
         navigate("/admin-register");
-    }
+    };
 
     return (
-        <div className="flex flex-col items-center pt-6 min-h-screen bg-gray-900 text-white">
-            <h1 className="text-4xl font-bold mb-6 text-green-400">Register New User</h1>
+        <div className="flex flex-col items-center pt-6 min-h-screen bg-gray-900 text-white pb-10">
+            <h1 className="text-4xl font-bold mb-10 text-green-400">Register New User</h1>
 
             {!imageCaptured ? (
                 <div className="w-[600px] h-[450px] border-4 border-blue-500 rounded-lg overflow-hidden mb-4">
@@ -104,34 +111,30 @@ const UserRegistration = () => {
                     className="w-[600px] h-[450px] border-2 rounded-lg mb-4"
                 />
             )}
-            <div className="space-x-2">
 
+            <div className="space-x-3">
                 {!imageCaptured && (
                     <button
                         onClick={captureImage}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg mb-4"
+                        className="mt-6 px-8 py-3 text-xl font-semibold rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 text-white"
                     >
-                        Capture Image
+                        Capture
                     </button>
-
                 )}
 
                 <button
                     onClick={LogoutAdmin}
-                    className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg mb-4"
+                    className="mt-6 px-8 py-3 text-xl font-semibold rounded-lg transition-colors bg-red-600 hover:bg-red-700 text-white"
                 >
-                    Logout admin
+                    Logout
                 </button>
 
                 <button
                     onClick={AddAdmin}
-                    className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg mb-4"
+                    className="mt-6 px-5 py-3 text-xl font-semibold rounded-lg transition-colors bg-green-600 hover:bg-green-700 text-white"
                 >
                     Add Admin
                 </button>
-
-
-
             </div>
 
             {isNewUser && (
@@ -141,18 +144,18 @@ const UserRegistration = () => {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         placeholder="Enter your name"
-                        className="w-80 px-4 py-2 text-white rounded-lg"
+                        className="w-80 px-4 py-2 text-white rounded-lg bg-gray-800 border border-gray-600"
                     />
                     <button
                         onClick={handleRegister}
-                        className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg"
+                        className="mt-6 px-5 py-3 text-xl font-semibold rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 text-white"
                     >
                         Register
                     </button>
                 </div>
             )}
 
-            {status && <p className="text-yellow-300 mt-4">{status}</p>}
+            {status && <p className="text-yellow-300 text-2xl mt-4">{status}</p>}
             {error && <p className="text-red-400 mt-4">{error}</p>}
         </div>
     );

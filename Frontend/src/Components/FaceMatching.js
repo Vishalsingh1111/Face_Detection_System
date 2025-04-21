@@ -23,7 +23,7 @@ const FaceMatching = () => {
             }
 
             setIsProcessing(true);
-            setMatchResult("Processing...");
+            setMatchResult("Scanning...");
             const base64Data = getBase64Data(imageSrc);
 
             try {
@@ -32,7 +32,22 @@ const FaceMatching = () => {
                 });
 
                 if (res.data.matched) {
-                    setMatchResult(`✅ Hello, ${res.data.username}!`);
+                    const username = res.data.username;
+
+                    const hour = new Date().getHours();
+                    let greeting = "";
+
+                    if (hour >= 5 && hour < 12) {
+                        greeting = "Good Morning";
+                    } else if (hour >= 12 && hour < 17) {
+                        greeting = "Good Afternoon";
+                    } else if (hour >= 17 && hour < 21) {
+                        greeting = "Good Evening";
+                    } else {
+                        greeting = "Good Night";
+                    }
+
+                    setMatchResult(`✅ Hello, ${username}! ${greeting} `);
                     setIsPaused(true);
 
                     setTimeout(() => {
@@ -40,6 +55,7 @@ const FaceMatching = () => {
                             setIsPaused(false);
                         }
                     }, 3000);
+
                 } else {
                     setMatchResult("User Not Registered");
                 }
@@ -65,7 +81,6 @@ const FaceMatching = () => {
                 intervalRef.current = null;
             }
         }
-
 
         return () => {
             if (intervalRef.current) {
@@ -106,21 +121,37 @@ const FaceMatching = () => {
                 />
             </div>
 
-            <p className="mt-4 text-3xl text-green-500">{matchResult}</p>
+            <div className="mt-4 text-center">
+                {matchResult && (
+                    matchResult.startsWith("✅ Hello") ? (
+                        <>
+                            <p className="text-3xl text-green-500">
+                                Hello, {matchResult.split("!")[0].split(",")[1].trim()}!
+                            </p>
+                            <p className="text-3xl text-yellow-400 mt-2">
+                                {matchResult.split("! ")[1]}
+                            </p>
+                        </>
+                    ) : (
+                        <p className="text-2xl text-red-400">{matchResult}</p>
+                    )
+                )}
+            </div>
+
             <div className="space-x-5">
                 <button
                     onClick={toggleProcess}
-                    className={`mt-6 px-8 py-3 text-xl font-semibold rounded-lg transition-colors ${isActive
+                    className={`mt-6 px-5 py-3 text-xl font-semibold rounded-lg transition-colors ${isActive
                         ? "bg-red-600 hover:bg-red-700 text-white"
                         : "bg-green-600 hover:bg-green-700 text-white"
                         }`}
                 >
-                    {isActive ? "Stop" : "Start"}
+                    {isActive ? "Stop Scanning" : "Start Scanning"}
                 </button>
                 <button
                     onClick={newUser}
-                    className="mt-6 px-8 py-3 text-xl font-semibold rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 text-white">
-                    Register
+                    className="mt-6 px-5 py-3 text-xl font-semibold rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 text-white">
+                    Add New User
                 </button>
             </div>
         </div>
