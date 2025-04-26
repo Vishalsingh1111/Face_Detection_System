@@ -54,6 +54,9 @@ const UserRegistration = () => {
         } catch (err) {
             console.error(err);
             setError("Error while matching face. Please try again.");
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
         }
     };
 
@@ -79,20 +82,14 @@ const UserRegistration = () => {
         } catch (err) {
             console.error(err);
             setError("Registration failed. Please try again.");
+
         }
     };
 
-    const LogoutAdmin = () => {
-        localStorage.removeItem("admin");
-        navigate("/");
-    };
 
-    const AddAdmin = () => {
-        navigate("/admin-register");
-    };
 
     return (
-        <div className="flex flex-col items-center pt-6 min-h-screen bg-gray-900 text-white pb-10">
+        <div className="flex flex-col items-center min-h-screen py-10 bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white">
             <h1 className="text-4xl font-bold mb-10 text-green-400">Register New User</h1>
 
             {!imageCaptured ? (
@@ -114,27 +111,16 @@ const UserRegistration = () => {
 
             <div className="space-x-3">
                 {!imageCaptured && (
+
                     <button
                         onClick={captureImage}
-                        className="mt-6 px-8 py-3 text-xl font-semibold rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 text-white"
+                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-xl font-semibold transition-colors duration-300"
                     >
                         Capture
                     </button>
                 )}
 
-                <button
-                    onClick={LogoutAdmin}
-                    className="mt-6 px-8 py-3 text-xl font-semibold rounded-lg transition-colors bg-red-600 hover:bg-red-700 text-white"
-                >
-                    Logout
-                </button>
 
-                <button
-                    onClick={AddAdmin}
-                    className="mt-6 px-5 py-3 text-xl font-semibold rounded-lg transition-colors bg-green-600 hover:bg-green-700 text-white"
-                >
-                    Add Admin
-                </button>
             </div>
 
             {isNewUser && (
@@ -148,7 +134,7 @@ const UserRegistration = () => {
                     />
                     <button
                         onClick={handleRegister}
-                        className="mt-6 px-5 py-3 text-xl font-semibold rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 text-white"
+                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-xl font-semibold transition-colors duration-300"
                     >
                         Register
                     </button>

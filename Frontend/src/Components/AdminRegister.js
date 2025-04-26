@@ -1,6 +1,8 @@
+
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { UserPlus } from "lucide-react";
 
 const AdminRegister = () => {
     const [email, setEmail] = useState("");
@@ -36,36 +38,46 @@ const AdminRegister = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
-            <div className="border-2 border-green-600 p-10 rounded">
-                <h1 className="text-4xl text-center mx-auto font-bold mb-10 text-green-500">Admin Registration</h1>
-                <div className="w-80 space-y-4">
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white p-6">
+            <div className="w-full max-w-md bg-white/5 backdrop-blur-lg rounded-2xl p-10 shadow-2xl">
+                <div className="flex items-center justify-center mb-6">
+                    <UserPlus className="text-green-500 mr-2" size={32} />
+                    <h1 className="text-3xl font-extrabold text-green-400">Admin Registration</h1>
+                </div>
+
+                <div className="space-y-5">
                     <input
                         type="email"
                         placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-600"
+                        className="w-full px-4 py-2 rounded-xl bg-gray-800 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:outline-none"
                     />
                     <input
                         type="password"
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-600"
+                        className="w-full px-4 py-2 rounded-xl bg-gray-800 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:outline-none"
                     />
+
                     <button
                         onClick={handleRegister}
-                        className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+                        className="w-full py-2 bg-green-600 hover:bg-green-700 transition-all rounded-xl font-semibold shadow-md"
                     >
                         Register
                     </button>
+
                     {error && (
                         <p className="text-red-500 text-sm text-center">{error}</p>
                     )}
                 </div>
-                <div className="mt-8 text-center mx-auto">
-                    <Link to="/admin-login" className="text-red-500">
+
+                <div className="mt-6 text-center">
+                    <Link
+                        to="/admin-login"
+                        className="text-sm text-gray-300 hover:text-green-400 transition-all"
+                    >
                         Already have an account? Login
                     </Link>
                 </div>

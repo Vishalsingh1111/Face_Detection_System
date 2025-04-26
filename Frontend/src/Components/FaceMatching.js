@@ -14,13 +14,10 @@ const FaceMatching = () => {
 
     const getBase64Data = (dataUrl) => dataUrl.split(",")[1];
 
-    // Use useCallback to memoize the function so it doesn't change on every render
     const captureAndMatch = useCallback(async () => {
         if (webcamRef.current && !isProcessing && !isPaused && isActive) {
             const imageSrc = webcamRef.current.getScreenshot();
-            if (!imageSrc) {
-                return;
-            }
+            if (!imageSrc) return;
 
             setIsProcessing(true);
             setMatchResult("Scanning...");
@@ -33,21 +30,15 @@ const FaceMatching = () => {
 
                 if (res.data.matched) {
                     const username = res.data.username;
-
                     const hour = new Date().getHours();
                     let greeting = "";
 
-                    if (hour >= 5 && hour < 12) {
-                        greeting = "Good Morning";
-                    } else if (hour >= 12 && hour < 17) {
-                        greeting = "Good Afternoon";
-                    } else if (hour >= 17 && hour < 21) {
-                        greeting = "Good Evening";
-                    } else {
-                        greeting = "Good Night";
-                    }
+                    if (hour >= 5 && hour < 12) greeting = "Good Morning";
+                    else if (hour >= 12 && hour < 17) greeting = "Good Afternoon";
+                    else if (hour >= 17 && hour < 21) greeting = "Good Evening";
+                    else greeting = "Good Night";
 
-                    setMatchResult(`✅ Hello, ${username}! ${greeting} `);
+                    setMatchResult(`✅ Hello, ${username}! ${greeting}`);
                     setIsPaused(true);
 
                     setTimeout(() => {
@@ -55,80 +46,90 @@ const FaceMatching = () => {
                             setIsPaused(false);
                         }
                     }, 3000);
-
                 } else {
-                    setMatchResult("User Not Registered");
+                    setMatchResult("❌ User Not Registered: Contact Admin");
                 }
             } catch (err) {
-                // Error handling kept empty as in original
+                // setMatchResult("❌ Error Occurred, Please Try Again");
             } finally {
                 setIsProcessing(false);
             }
         }
     }, [isProcessing, isPaused, isActive]);
 
-    // Effect to handle the continuous capturing
     useEffect(() => {
         if (isActive) {
-            // Start the interval when isActive becomes true
             intervalRef.current = setInterval(() => {
                 captureAndMatch();
             }, 500);
         } else {
-            // Clear the interval when isActive becomes false
             if (intervalRef.current) {
                 clearInterval(intervalRef.current);
                 intervalRef.current = null;
             }
         }
-
-        return () => {
-            if (intervalRef.current) {
-                clearInterval(intervalRef.current);
-                intervalRef.current = null;
-            }
-        };
+        return () => clearInterval(intervalRef.current);
     }, [isActive, captureAndMatch]);
 
-    // Toggle button handler
     const toggleProcess = () => {
         if (isActive) {
-            // Stop the process
             setIsActive(false);
             setIsPaused(false);
             setMatchResult("");
         } else {
-            // Start the process
             setIsActive(true);
             setMatchResult("Starting...");
         }
     };
 
-    const newUser = () => {
+    const AdminController = () => {
         navigate("/admin-login");
     };
 
     return (
-        <div className="flex flex-col items-center pt-10 bg-gray-900 min-h-screen">
-            <h1 className="text-4xl text-orange-500 font-semibold mb-10">Face Morphing Detection</h1>
+        <div className="flex flex-col items-center min-h-screen py-10 bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white">
+            <h1 className="text-4xl font-bold mb-10 text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-500">
+                Face Morphing Detection
+            </h1>
 
-            <div className="w-[600px] h-[450px] rounded-lg overflow-hidden border-4 border-blue-500 bg-blue-500">
+            {/* Webcam Section */}
+            <div className="w-[600px] h-[450px] rounded-xl overflow-hidden border-4 border-blue-500 shadow-2xl">
                 <Webcam
                     ref={webcamRef}
                     screenshotFormat="image/jpeg"
-                    className="w-full h-full"
+                    className="w-full h-full object-cover"
                     videoConstraints={{ facingMode: "user" }}
                 />
             </div>
 
-            <div className="mt-4 text-center">
+            {/* Buttons */}
+            <div className="flex gap-6 mt-8">
+                <button
+                    onClick={toggleProcess}
+                    className={`px-6 py-3 rounded-lg text-xl font-semibold transition-colors duration-300 ${isActive
+                        ? "bg-red-600 hover:bg-red-700"
+                        : "bg-green-600 hover:bg-green-700"
+                        }`}
+                >
+                    {isActive ? "Stop Scanning" : "Start Scanning"}
+                </button>
+                <button
+                    onClick={AdminController}
+                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-xl font-semibold transition-colors duration-300"
+                >
+                    Admin Panel
+                </button>
+            </div>
+
+            {/* Match Result */}
+            <div className="mt-2 text-center min-h-[100px] flex flex-col justify-center">
                 {matchResult && (
                     matchResult.startsWith("✅ Hello") ? (
                         <>
-                            <p className="text-3xl text-green-500">
-                                Hello, {matchResult.split("!")[0].split(",")[1].trim()}!
+                            <p className="text-3xl text-green-400 font-bold">
+                                {matchResult.split("!")[0].replace("✅", "").trim()}!
                             </p>
-                            <p className="text-3xl text-yellow-400 mt-2">
+                            <p className="text-2xl text-yellow-400 mt-2">
                                 {matchResult.split("! ")[1]}
                             </p>
                         </>
@@ -136,23 +137,6 @@ const FaceMatching = () => {
                         <p className="text-2xl text-red-400">{matchResult}</p>
                     )
                 )}
-            </div>
-
-            <div className="space-x-5">
-                <button
-                    onClick={toggleProcess}
-                    className={`mt-6 px-5 py-3 text-xl font-semibold rounded-lg transition-colors ${isActive
-                        ? "bg-red-600 hover:bg-red-700 text-white"
-                        : "bg-green-600 hover:bg-green-700 text-white"
-                        }`}
-                >
-                    {isActive ? "Stop Scanning" : "Start Scanning"}
-                </button>
-                <button
-                    onClick={newUser}
-                    className="mt-6 px-5 py-3 text-xl font-semibold rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 text-white">
-                    Add New User
-                </button>
             </div>
         </div>
     );
