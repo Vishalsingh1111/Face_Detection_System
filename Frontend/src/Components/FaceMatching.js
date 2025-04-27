@@ -47,10 +47,17 @@ const FaceMatching = () => {
                         }
                     }, 3000);
                 } else {
-                    setMatchResult("❌ User Not Registered or Morphed Face");
+                    setMatchResult(" User Not Registered or Morphed Face");
+                    setIsPaused(true);
+
+                    setTimeout(() => {
+                        if (isActive) {
+                            setIsPaused(false);
+                        }
+                    }, 3000);
                 }
             } catch (err) {
-                // setMatchResult("❌ Error Occurred, Please Try Again");
+                // setMatchResult(" Error Occurred, Please Try Again");
             } finally {
                 setIsProcessing(false);
             }
@@ -134,7 +141,7 @@ const FaceMatching = () => {
                             </p>
                         </>
                     ) : (
-                        <p className="text-2xl text-red-400">{matchResult}</p>
+                        <p className="text-3xl text-red-500">{matchResult}</p>
                     )
                 )}
             </div>
