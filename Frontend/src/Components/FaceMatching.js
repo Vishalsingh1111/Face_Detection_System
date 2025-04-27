@@ -47,7 +47,7 @@ const FaceMatching = () => {
                         }
                     }, 3000);
                 } else {
-                    setMatchResult("❌ User Not Registered: Contact Admin");
+                    setMatchResult("❌ User Not Registered or Morphed Face");
                 }
             } catch (err) {
                 // setMatchResult("❌ Error Occurred, Please Try Again");
