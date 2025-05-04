@@ -96,7 +96,7 @@ const FaceMatching = () => {
     return (
         <div className="flex flex-col items-center min-h-screen py-10 bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white">
             <h1 className="text-4xl font-bold mb-10 text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-500">
-                Face Detection Application
+                Face Matching Application
             </h1>
 
             {/* Webcam Section */}
